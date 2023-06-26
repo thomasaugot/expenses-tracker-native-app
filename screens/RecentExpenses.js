@@ -1,7 +1,8 @@
 import { Text, StyleSheet } from "react-native";
+import ExpensesOutput from "../components/ExpensesOutput/ExpensesOutput";
 
 const RecentExpenses = () => {
-  return <Text>Hello</Text>;
+  return <ExpensesOutput expensesPeriod="Last 7 days" />;
 };
 
 export default RecentExpenses;
