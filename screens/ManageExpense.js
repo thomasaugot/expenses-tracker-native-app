@@ -15,9 +15,17 @@ const ManageExpense = ({ route, navigation }) => {
     });
   }, [navigation, isEditing]);
 
-  const cancelHandler = () => {};
+  const deleteExpenseHandler = () => {
+    navigation.goBack();
+  };
 
-  const confirmHandler = () => {};
+  const cancelHandler = () => {
+    navigation.goBack();
+  };
+
+  const confirmHandler = () => {
+    navigation.goBack();
+  };
 
   return (
     <View style={styles.pageContainer}>
