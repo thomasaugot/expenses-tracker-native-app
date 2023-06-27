@@ -5,6 +5,7 @@ import { GlobalStyles } from "../constants/styles";
 import Button from "../components/UI/Button";
 import { ExpensesContext } from "../store/expenses.context";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
+import { storeExpense } from "../util/http";
 
 const ManageExpense = ({ route, navigation }) => {
   const expenseCtx = useContext(ExpensesContext);
@@ -12,6 +13,8 @@ const ManageExpense = ({ route, navigation }) => {
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
   // these two lines to determine wether we are adding or editing an expense item
+
+  const selectedExpense = expenseCtx.expenses.find((expense) => expense.id === editedExpenseId);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -28,30 +31,28 @@ const ManageExpense = ({ route, navigation }) => {
     navigation.goBack();
   };
 
-  const confirmHandler = () => {
+  async function confirmHandler(expenseData) {
     if (isEditing) {
-      expenseCtx.updateExpense();
+      expenseCtx.updateExpense(editedExpenseId, expenseData);
     } else {
-      expenseCtx.addExpense();
+      const id = await storeExpense(expenseData);
+      expenseCtx.addExpense({ ...expenseData, id: id });
     }
     navigation.goBack();
-  };
+  }
 
   return (
     <View style={styles.pageContainer}>
-      <ExpenseForm />
-      <View style={styles.buttonsContainer}>
-        <Button mode="flat" onPress={cancelHandler} style={styles.button}>
-          Cancel
-        </Button>
-        <Button onPress={confirmHandler} style={styles.button}>
-          {isEditing ? "Update" : "Add"}
-        </Button>
-      </View>
+      <ExpenseForm
+        onSubmit={confirmHandler}
+        onCancel={cancelHandler}
+        submitButtonLabel={isEditing ? "Update" : "Add"}
+        defaultValues={selectedExpense}
+      />
       {isEditing && (
         <View style={styles.deleteContainer}>
           <IconButton
-            onPress={cancelHandler}
+            onPress={deleteExpenseHandler}
             icon="trash"
             color={GlobalStyles.colors.error500}
             size={36}
@@ -69,13 +70,6 @@ const styles = StyleSheet.create({
     backgroundColor: GlobalStyles.colors.primary800,
     flex: 1,
   },
-  buttonsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    textAlign: "center",
-    justifyContent: "center",
-    margin: 44,
-  },
   deleteContainer: {
     marginTop: 16,
     paddingTop: 8,
@@ -87,14 +81,5 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     backgroundColor: GlobalStyles.colors.primary800,
-  },
-  button: {
-    width: 120,
-    marginHorizontal: 8,
-  },
-  buttons: {
-    flex: "row",
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

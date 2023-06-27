@@ -3,6 +3,7 @@ import { createContext, useReducer } from "react";
 export const ExpensesContext = createContext({
   expenses: [],
   addExpense: ({ description, amount, date }) => {},
+  setExpenses: (expenses) => {},
   deleteExpense: (id) => {},
   updateExpense: (id, { description, amount, date }) => {},
 });
@@ -10,8 +11,10 @@ export const ExpensesContext = createContext({
 const expensesReducer = (state, action) => {
   switch (action.type) {
     case "ADD":
-      const id = new Date().toString() + Math.random().toString();
-      return [{ ...action.payload, id: id }, ...state];
+      return [action.payload, ...state];
+    case "SET":
+      const inverted = action.payload.reverse(); //to revert the array since Firebase does reverse ours
+      return action.payload;
     case "UPDATE":
       const updatableExpenseIndex = state.findIndex((expense) => expense.id === action.payload.id);
       const updatableExpense = state[updatableExpenseIndex];
@@ -32,6 +35,10 @@ const ExpensesContextProvider = ({ children }) => {
     dispatch({ type: "ADD", payload: expenseData });
   };
 
+  const setExpenses = (expenses) => {
+    dispatch({ type: "SET", payload: expenses });
+  };
+
   const deleteExpense = (id) => {
     dispatch({ type: "DELETE", payload: id });
   };
@@ -45,6 +52,7 @@ const ExpensesContextProvider = ({ children }) => {
     addExpense: addExpense,
     deleteExpense: deleteExpense,
     updateExpense: updateExpense,
+    setExpenses: setExpenses,
   };
 
   return <ExpensesContext.Provider value={value}>{children}</ExpensesContext.Provider>;
