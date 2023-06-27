@@ -36,29 +36,23 @@ export const fetchExpenses = async () => {
   }
 };
 
-export const updateExpense = async (expenseData) => {
+export const updateExpense = async (expenseData, id) => {
   try {
-    const response = await axios.post(
-      BACKEND_URL + "/expenses.json", // .json extension is only specific to firebase
+    const response = await axios.put(
+      BACKEND_URL + `/expenses/${id}.json`, // .json extension is only specific to firebase
       expenseData
     );
-    const id = response.data.name;
-    console.log("Expense data stored successfully");
-    return id;
   } catch (error) {
-    console.log("Error storing expense data:", error);
+    console.log("Error updating expense data:", error);
   }
 };
 
 export const deleteExpense = async (expenseData) => {
   try {
-    const response = await axios.post(
-      BACKEND_URL + "/expenses.json", // .json extension is only specific to firebase
+    const response = await axios.delete(
+      BACKEND_URL + `/expenses/${id}.json`, // .json extension is only specific to firebase
       expenseData
     );
-    const id = response.data.name;
-    console.log("Expense data stored successfully");
-    return id;
   } catch (error) {
     console.log("Error storing expense data:", error);
   }
